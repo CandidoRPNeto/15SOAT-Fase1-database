@@ -1,6 +1,6 @@
 name: Deploy
 
-# Diferente de workshop-os-infra-kubernetes (disparado externamente pelo
+# Diferente de 15SOAT-Fase1-kubernetes (disparado externamente pelo
 # CI/CD da app), este repo aplica sozinho em todo push em `main` — o banco
 # não depende de uma imagem publicada por outro repo.
 on:
@@ -42,7 +42,7 @@ jobs:
         with:
           terraform_version: "1.15.8"
 
-      # Mesma ressalva de workshop-os-infra-kubernetes/deploy.yml: sem
+      # Mesma ressalva de 15SOAT-Fase1-kubernetes/deploy.yml: sem
       # backend remoto (ver RFC-002), o state deste apply não sobrevive
       # entre runs do runner efêmero — não usar repetidamente sem antes
       # configurar um backend remoto.
@@ -53,6 +53,6 @@ jobs:
         run: terraform apply -auto-approve
 
       # project_id/environment_id precisam ser copiados manualmente pro
-      # workshop-os-infra-kubernetes até existir o backend remoto (RFC-002).
-      - name: Print outputs for manual handoff to workshop-os-infra-kubernetes
+      # 15SOAT-Fase1-kubernetes até existir o backend remoto (RFC-002).
+      - name: Print outputs for manual handoff to 15SOAT-Fase1-kubernetes
         run: terraform output
