@@ -1,11 +1,11 @@
 # Hierarquia Dokploy: project > environment > service. Este repositório é o
-# dono do dokploy_project compartilhado com workshop-os-infra-kubernetes
+# dono do dokploy_project compartilhado com 15SOAT-Fase1-kubernetes
 # (Epic 3 consome project_id/environment_id via outputs.tf, ver RFC-002 em
 # 15SOAT-Fase1/docs/architecture/rfcs/rfc-002-managed-database-strategy.md
 # §"Hierarquia e ownership") — decisão tomada aqui porque o Epic 2 (banco)
 # precede o Epic 3 (app) na ordem de dependência do backlog.
-resource "dokploy_project" "workshop_os" {
-  name        = "workshop-os"
+resource "dokploy_project" "fase1" {
+  name        = "15SOAT-Fase1"
   description = "Workshop OS — Fase 3 (gerenciado via Terraform, ver 15SOAT-Fase1)"
 }
 
@@ -14,13 +14,13 @@ resource "dokploy_project" "workshop_os" {
 # de `environments` não é garantida (ver getting-started.md do provider).
 locals {
   production_environment_id = [
-    for e in dokploy_project.workshop_os.environments : e.id
+    for e in dokploy_project.fase1.environments : e.id
     if e.name == "production"
   ][0]
 }
 
-resource "dokploy_postgres" "workshop_os" {
-  name              = "workshop-os-postgres"
+resource "dokploy_postgres" "fase1" {
+  name              = "15SOAT-Fase1-postgres"
   environment_id    = local.production_environment_id
   database_name     = "workshop_os"
   database_user     = "workshop_os"
