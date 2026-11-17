@@ -1,0 +1,58 @@
+name: Deploy
+
+# Diferente de 15SOAT-Fase1-kubernetes (disparado externamente pelo
+# CI/CD da app), este repo aplica sozinho em todo push em `main` — o banco
+# não depende de uma imagem publicada por outro repo.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Check required secrets
+        id: check
+        run: |
+          if [ -n "${{ secrets.DOKPLOY_ENDPOINT }}" ] && \
+             [ -n "${{ secrets.DOKPLOY_API_KEY }}" ] && \
+             [ -n "${{ secrets.TF_VAR_DB_PASSWORD }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  apply:
+    needs: check-secrets
+    runs-on: ubuntu-latest
+    if: needs.check-secrets.outputs.ready == 'true'
+    env:
+      DOKPLOY_ENDPOINT: ${{ secrets.DOKPLOY_ENDPOINT }}
+      DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+      TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.15.8"
+
+      # Mesma ressalva de 15SOAT-Fase1-kubernetes/deploy.yml: sem
+      # backend remoto (ver RFC-002), o state deste apply não sobrevive
+      # entre runs do runner efêmero — não usar repetidamente sem antes
+      # configurar um backend remoto.
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform apply
+        run: terraform apply -auto-approve
+
+      # project_id/environment_id precisam ser copiados manualmente pro
+      # 15SOAT-Fase1-kubernetes até existir o backend remoto (RFC-002).
+      - name: Print outputs for manual handoff to 15SOAT-Fase1-kubernetes
+        run: terraform output

@@ -1,4 +1,4 @@
-# workshop-os-infra-database
+# 15SOAT-Fase1-infra-database
 
 Terraform que provisiona o Postgres "gerenciado" do Workshop OS na Fase 3,
 como recurso `Database` do [Dokploy](https://dokploy.com) — a plataforma de
@@ -15,11 +15,11 @@ decisão de escolha do provider/schema em
 ## Propósito
 
 Cria, via Terraform:
-- `dokploy_project` (`workshop-os`) — projeto compartilhado com
-  [`workshop-os-infra-kubernetes`](https://github.com/CandidoRPNeto/workshop-os-infra-kubernetes)
+- `dokploy_project` (`15SOAT-Fase1`) — projeto compartilhado com
+  [`15SOAT-Fase1-kubernetes`](https://github.com/CandidoRPNeto/15SOAT-Fase1-kubernetes)
   (Epic 3), que anexa o recurso de app ao mesmo `project_id`/`environment_id`
   exportados aqui.
-- `dokploy_postgres` (`workshop-os-postgres`) — banco `workshop_os`, imagem
+- `dokploy_postgres` (`15SOAT-Fase1-postgres`) — banco `workshop_os`, imagem
   `postgres:16-alpine` (mesma versão usada em `docker-compose.yml`/`k8s/postgres.yaml`
   na Fase 2 do repo principal).
 
@@ -66,13 +66,13 @@ estiverem configurados no repositório (mesmo padrão de gate condicional do
 flowchart LR
     TF["Terraform<br/>(este repo)"] -->|apply| Dokploy
 
-    subgraph Dokploy["Dokploy — project: workshop-os"]
+    subgraph Dokploy["Dokploy — project: 15SOAT-Fase1"]
         Env["environment: production"]
-        PG[("dokploy_postgres<br/>workshop-os-postgres<br/>postgres:16-alpine")]
+        PG[("dokploy_postgres<br/>15SOAT-Fase1-postgres<br/>postgres:16-alpine")]
         Env --> PG
     end
 
-    TF -.->|outputs: project_id, environment_id| AppInfra["workshop-os-infra-kubernetes<br/>(Epic 3 — mesmo project/environment)"]
+    TF -.->|outputs: project_id, environment_id| AppInfra["15SOAT-Fase1-kubernetes<br/>(Epic 3 — mesmo project/environment)"]
 ```
 
 ## Swagger / Postman
